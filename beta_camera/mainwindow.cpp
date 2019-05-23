@@ -2,7 +2,8 @@
 #include "ui_mainwindow.h"
 #include<QPixmap>
 
-int c=0;bool ok;bool fbl;bool geshi;
+int c=0,t=0;
+bool ok,fbl,geshi;
 QRect labelrec;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -10,12 +11,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
    timer=new QTimer(this);
-   capture.open("/dev/video0");
-   geshi= capture.set(CAP_PROP_FOURCC,CAP_OPENCV_MJPEG);
-     ok=capture.set(CAP_PROP_FPS,60);
    connect(timer,SIGNAL(timeout()),this,SLOT(readframe()));
-   opencamera();
-
+   connect(pushButton, SIGNAL(clicked()), this, SLOT(on_pushButton_clicked()));
+   connect(pushButton_2, SIGNAL(clicked()), this, SLOT(on_pushButton_2_clicked()));
 }
 
 void MainWindow::readframe()
@@ -34,18 +32,30 @@ void MainWindow::readframe()
 
     }
     //cvtColor(frame,frame,COLOR_BGR2RGB);
-    QImage image((const uchar*)frame.data,frame.cols,frame.rows,frame.step,QImage::Format_RGB888);
-    ui->label->resize(ui->label->width(),ui->label->height());
+    QImage image((const uchar*)frame.data,frame.cols,frame.rows,frame.step,QImage::Format_RGB888);  
     ui->label->setPixmap(QPixmap::fromImage(image));
 
 }
 
 void MainWindow::opencamera()
-{
+{ 
     timer->start(1000/60);
-
 }
+void MainWindow::on_pushButton_clicked()
+{
 
+   capture.open("/dev/video0");
+   geshi= capture.set(CAP_PROP_FOURCC,CAP_OPENCV_MJPEG);
+   ok=capture.set(CAP_PROP_FPS,60);
+   opencamera();
+   ui->pushButton->setEnabled(false);
+   ui->pushButton_2->setEnabled(true);
+}
+void MainWindow::on_pushButton_2_clicked()
+{   timer->stop();
+    ui->pushButton->setEnabled(true);
+    ui->pushButton_2->setEnabled(false);
+}
 MainWindow:: ~MainWindow()
 {
 capture.release();
