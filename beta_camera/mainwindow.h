@@ -16,6 +16,9 @@
 #include<QLabel>
 #include<QPushButton>
 #include<QTimer>
+#include<QComboBox>
+#include<QtSerialPort/QSerialPort>
+#include<QtSerialPort/QSerialPortInfo>
 namespace Ui {
 class MainWindow;
 }
@@ -28,14 +31,19 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-private slots:
-void opencamera();
-void readframe();
-void on_pushButton_clicked();
-void on_pushButton_2_clicked();
 
+private slots:
+void freshcamera();
+void readframe();
+void on_pushButton_clicked();//cam
+void on_pushButton_2_clicked();//serial
+void on_pushButton_3_clicked();//serial
+void serialread();
+void on_comboBox_currentIndexChanged(const QString&);
 private:
     Ui::MainWindow *ui;
+    QSerialPort serial;
+    void initserialport();
     VideoCapture capture;
     QTimer *timer;
     Mat frame;
